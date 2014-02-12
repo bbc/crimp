@@ -1,0 +1,10 @@
+/config/*.yaml
+/config/*.yml
+Gemfile.lock
+.rspec
+*.gem
+
+/pkg
+/tmp
+/components
+

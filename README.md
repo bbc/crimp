@@ -1,6 +1,11 @@
 # Crimp
 
-TODO: Write a gem description
+Creating an md5 hash of a number, string, array, or hash in Ruby
+
+![mighty-boosh-four-way-crimp-o](https://f.cloud.github.com/assets/180050/2148112/b44fd6fa-93de-11e3-9f9a-ad941f069b5c.gif)
+
+Shamelessly copied from [this Stack Overflow
+answer](http://stackoverflow.com/a/6462589/3243663).
 
 ## Installation
 
@@ -18,7 +23,19 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+```rb
+require 'crimp'
+
+Crimp.stringify({:a => {:b => 'b', :c => 'c'}, :d => 'd'})
+
+# => [\"aSymbol=>[\\\"bSymbol=>b\\\", \\\"cSymbol=>c\\\"]Array\",
+\"dSymbol=>d\"]Array"
+
+Crimp.signature({:a => {:b => 'b', :c => 'c'}, :d => 'd'})
+
+# => "68d07febc4f47f56fa6ef5de063a77b1"
+
+```
 
 ## Contributing
 

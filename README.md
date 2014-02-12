@@ -1,5 +1,8 @@
 # Crimp
 
+[![Build Status](https://travis-ci.org/BBC-News/crimp.png?branch=master)](https://travis-ci.org/BBC-News/crimp)
+[![Gem Version](https://badge.fury.io/rb/crimp.png)](http://badge.fury.io/rb/crimp)
+
 Creating an md5 hash of a number, string, array, or hash in Ruby
 
 ![mighty-boosh-four-way-crimp-o](https://f.cloud.github.com/assets/180050/2148112/b44fd6fa-93de-11e3-9f9a-ad941f069b5c.gif)
@@ -28,8 +31,7 @@ require 'crimp'
 
 Crimp.stringify({:a => {:b => 'b', :c => 'c'}, :d => 'd'})
 
-# => [\"aSymbol=>[\\\"bSymbol=>b\\\", \\\"cSymbol=>c\\\"]Array\",
-\"dSymbol=>d\"]Array"
+# => [\"aSymbol=>[\\\"bSymbol=>b\\\", \\\"cSymbol=>c\\\"]Array\",\"dSymbol=>d\"]Array"
 
 Crimp.signature({:a => {:b => 'b', :c => 'c'}, :d => 'd'})
 

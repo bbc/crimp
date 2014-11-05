@@ -17,6 +17,11 @@ describe Crimp do
           Digest::MD5.hexdigest(subject.stringify(hash))
         )
       end
+
+      context 'check MD5 consistent across versions' do
+        let(:expected_md5) { '68d07febc4f47f56fa6ef5de063a77b1' }
+        specify { expect(subject.signature hash).to eq expected_md5 }
+      end
     end
 
     context "given an Array" do
@@ -28,6 +33,11 @@ describe Crimp do
         ).to eq(
           Digest::MD5.hexdigest(subject.stringify(array))
         )
+      end
+
+      context 'check MD5 consistent across versions' do
+        let(:expected_md5) { '4dc4e1161c9315db0bc43c0201b3ec05' }
+        specify { expect(subject.signature array).to eq expected_md5 }
       end
     end
 

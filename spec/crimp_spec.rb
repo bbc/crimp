@@ -1,70 +1,61 @@
 require 'spec_helper'
 
 describe Crimp do
-  let (:example_hash) { {:a => {:b => 'b', :c => 'c'}, :d => 'd'} }
-  let (:example_hash_unordered) { {:d => 'd', :a => {:c => 'c', :b => 'b'}} }
-  let (:example_array) { [1,2,3,[4,[5,6]]] }
-  let (:example_array_unordered) { [3,2,1,[[5,6],4]] }
+  let (:hash) { {:a => {:b => 'b', :c => 'c'}, :d => 'd'} }
+  let (:hash_unordered) { {:d => 'd', :a => {:c => 'c', :b => 'b'}} }
+  let (:array) { [1, 2, 3, [4, [5, 6]]] }
+  let (:array_unordered) { [3, 2, 1, [[5, 6], 4]] }
 
-  describe ".signature(obj)" do
-    context "obj.class == Hash" do
-      it "returns a string" do
-        expect(subject.signature(example_hash)).to be_a String
-      end
+  describe ".signature" do
+    context "given a Hash" do
+      specify { expect(subject.signature hash).to be_a String }
 
-      it "returns Digest::MD5.hexdigest of self.stringify(obj)" do
+      it "returns MD5 hash of stringified Hash" do
         expect(
-          subject.signature(example_hash)
+          subject.signature(hash)
         ).to eq(
-          Digest::MD5.hexdigest(subject.stringify(example_hash))
+          Digest::MD5.hexdigest(subject.stringify(hash))
         )
       end
     end
 
-    context "obj.class == Array" do
-      it "returns a string" do
-        expect(subject.signature(example_array)).to be_a String
-      end
+    context "given an Array" do
+      specify { expect(subject.signature array).to be_a String }
 
-      it "returns Digest::MD5.hexdigest of self.stringify(obj)" do
+      it "returns MD5 hash of stringified Array" do
         expect(
-          subject.signature(example_array)
+          subject.signature(array)
         ).to eq(
-          Digest::MD5.hexdigest(subject.stringify(example_array))
+          Digest::MD5.hexdigest(subject.stringify(array))
         )
       end
     end
 
   end
 
-  describe ".stringify(obj)" do
-    context "obj.class == Hash" do
-      it "returns a string" do
-        expect(subject.stringify(example_hash)).to be_a String
-      end
+  describe ".stringify" do
+    context "given a Hash" do
+      specify { expect(subject.stringify hash).to be_a String }
 
-      it "will return equal strings for differently ordered hashes" do
+      it "returns equal strings for differently ordered hashes" do
         expect(
-          subject.stringify(example_hash)
+          subject.stringify(hash)
         ).to eq(
-        subject.stringify(example_hash_unordered)
+          subject.stringify(hash_unordered)
         )
       end
     end
 
-    context "obj.class == Array" do
-      it "returns a string" do
-        expect(subject.stringify(example_array)).to be_a String
-      end
+    context "given an Array" do
+      specify { expect(subject.stringify array).to be_a String }
 
-      it "will return equal strings for differently ordered arrays" do
+      it "returns equal strings for differently ordered arrays" do
         expect(
-          subject.stringify(example_array)
+          subject.stringify(array)
         ).to eq(
-        subject.stringify(example_array_unordered)
+          subject.stringify(array_unordered)
         )
       end
-
     end
   end
 end

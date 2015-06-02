@@ -6,8 +6,8 @@ require 'crimp/version'
 Gem::Specification.new do |spec|
   spec.name          = "crimp"
   spec.version       = Crimp::VERSION
-  spec.authors       = ["Robert Kenny", "Mark McDonnell"]
-  spec.email         = ["kenoir@gmail.com","mark.mcdx@gmail.com"]
+  spec.authors       = ["BBC News"]
+  spec.email         = ["FutureMediaNewsRubyGems@bbc.co.uk"]
   spec.summary       = %q{Creating an md5 hash of a number, string, array, or hash in Ruby}
   spec.description   = <<-EOS.gsub /^\s+/, ""
                          Shamelessly lifted from http://stackoverflow.com/questions/6461812/creating-an-md5-hash-of-a-number-string-array-or-hash-in-ruby

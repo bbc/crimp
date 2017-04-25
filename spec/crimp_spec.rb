@@ -11,11 +11,16 @@ describe Crimp do
       specify { expect(subject.signature(hash)).to be_a String }
 
       it 'returns MD5 hash of stringified Hash' do
-        expect(
-          subject.signature(hash)
-        ).to eq(
-          Digest::MD5.hexdigest(subject.stringify(hash))
-        )
+        expect(subject.signature(hash)).to eq(Digest::MD5.hexdigest(subject.stringify(hash)))
+      end
+
+      it 'does not modify original hash' do
+        original_hash = { d: 'd', a: { c: 'c', b: 'b' } }
+        expected_hash = { d: 'd', a: { c: 'c', b: 'b' } }
+
+        subject.signature(original_hash)
+
+        expect(original_hash).to eq(expected_hash)
       end
     end
 
@@ -23,11 +28,16 @@ describe Crimp do
       specify { expect(subject.signature(array)).to be_a String }
 
       it 'returns MD5 hash of stringified Array' do
-        expect(
-          subject.signature(array)
-        ).to eq(
-          Digest::MD5.hexdigest(subject.stringify(array))
-        )
+        expect(subject.signature(array)).to eq(Digest::MD5.hexdigest(subject.stringify(array)))
+      end
+
+      it 'does not modify original array' do
+        original_array = [5, 4, 2, 6, [5, 7, 2]]
+        expected_array = [5, 4, 2, 6, [5, 7, 2]]
+
+        subject.signature(original_array)
+
+        expect(original_array).to eq(expected_array)
       end
     end
   end
@@ -37,11 +47,16 @@ describe Crimp do
       specify { expect(subject.stringify(hash)).to be_a String }
 
       it 'returns equal strings for differently ordered hashes' do
-        expect(
-          subject.stringify(hash)
-        ).to eq(
-          subject.stringify(hash_unordered)
-        )
+        expect(subject.stringify(hash)).to eq(subject.stringify(hash_unordered))
+      end
+
+      it 'does not modify original hash' do
+        original_hash = { d: 'd', a: { c: 'c', b: 'b' } }
+        expected_hash = { d: 'd', a: { c: 'c', b: 'b' } }
+
+        subject.signature(original_hash)
+
+        expect(original_hash).to eq(expected_hash)
       end
     end
 
@@ -49,11 +64,16 @@ describe Crimp do
       specify { expect(subject.stringify(array)).to be_a String }
 
       it 'returns equal strings for differently ordered arrays' do
-        expect(
-          subject.stringify(array)
-        ).to eq(
-          subject.stringify(array_unordered)
-        )
+        expect(subject.stringify(array)).to eq(subject.stringify(array_unordered))
+      end
+
+      it 'does not modify original array' do
+        original_array = [5, 4, 2, 6, [5, 7, 2]]
+        expected_array = [5, 4, 2, 6, [5, 7, 2]]
+
+        subject.signature(original_array)
+
+        expect(original_array).to eq(expected_array)
       end
     end
   end

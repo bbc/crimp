@@ -36,7 +36,7 @@ module Crimp
   end
 
   def self.parse_array(array)
-    array.map! { |e| stringify(e) }.sort!
+    array.map { |e| stringify(e) }.sort
   end
 
   def self.parse_hash(hash)

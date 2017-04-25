@@ -1,5 +1,5 @@
-require "crimp/version"
-require "digest"
+require 'crimp/version'
+require 'digest'
 
 module Crimp
   def self.signature(obj)
@@ -44,6 +44,6 @@ module Crimp
   end
 
   def self.to_string(obj)
-    "#{obj.to_s}#{obj.class.to_s}"
+    "#{obj}#{obj.class}"
   end
 end

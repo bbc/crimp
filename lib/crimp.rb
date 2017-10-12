@@ -40,7 +40,7 @@ module Crimp
   end
 
   def self.parse_hash(hash)
-    stringify hash_to_array(hash)
+    stringify(hash_to_array(hash)).sub(/Array$/, 'Hash')
   end
 
   def self.to_string(obj)

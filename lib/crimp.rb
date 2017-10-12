@@ -27,7 +27,7 @@ module Crimp
 
   def self.hash_to_array(hash)
     [].tap do |a|
-      hash.each { |k, v| a << pair_to_string(k, v) }
+      hash.map { |k,v| [stringify(k),v] }.sort { |a,b| a[0].to_s <=> b[0].to_s }.each { |val| a << pair_to_string(val[0],val[1]) }
     end
   end
 
@@ -36,7 +36,7 @@ module Crimp
   end
 
   def self.parse_array(array)
-    array.map { |e| stringify(e) }.sort
+    array.map { |e| stringify(e) }
   end
 
   def self.parse_hash(hash)

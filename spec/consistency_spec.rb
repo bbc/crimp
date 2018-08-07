@@ -39,6 +39,29 @@ describe Crimp do
 
         specify { expect(subject.signature(array)).to eq md5 }
       end
+
+      context 'given stringified hash' do
+        let(:stringified_hash) {"{ a: { b: 'b', c: 'c' }, d: 'd' }"}
+        let(:md5) { 'f5327912eeb41996b5aded6550d11187' }
+
+        specify { expect(subject.signature(stringified_hash)).to eq md5 }
+      end
+
+      context 'given a string' do
+        let(:string) {"do shash'owania"}
+        let(:md5) { '48e380a165c417253512a904d6b5cf2b' }
+
+        specify { expect(subject.signature(string)).to eq md5 }
+      end
+
+      context 'given a number' do
+        let(:number) {1234567890}
+        # RUBY 2.5.0
+        # let(:md5) { 'cbabd6f8bfda13b76c0e28eb0a6f4ef1' }
+        let(:md5) { '1f5c62f597aefd84d180c26e1de61021' }
+
+        specify { expect(subject.signature(number)).to eq md5 }
+      end
     end
   end
 end

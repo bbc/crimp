@@ -26,7 +26,10 @@ describe Crimp do
     end
 
     context 'given a stringified hash' do
+      specify { expect(subject.signature(stringified_hash)).to be_a String }
+
       it 'returns MD5 hash of stringified hash' do
+        # puts subject.signature(stringified_hash)
         expect(subject.signature(stringified_hash)).to eq(Digest::MD5.hexdigest(subject.stringify(stringified_hash)))
       end
     end

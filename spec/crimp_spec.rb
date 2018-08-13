@@ -45,13 +45,19 @@ describe Crimp do
     end
 
     context 'Given an integer' do
-      it 'returns MD5 hash of stringified Array' do
+      it 'returns MD5 hash of an Integer' do
         expect(subject.signature(123)).to eq '519d3381631851be66711f6d7dfbb4f8'
       end
     end
 
+    context 'Given an Bignum' do
+      it 'returns MD5 hash of a Bignum' do
+        expect(subject.signature(9999999999999999999)).to eq 'f00e75abca720e18fd4213e2a6de96c6'
+      end
+    end
+
     context 'Given an float' do
-      it 'returns MD5 hash of stringified Array' do
+      it 'returns MD5 hash of a Float' do
         expect(subject.signature(3.14)).to eq 'b07d506e3701fddd083ae9095df43218'
       end
     end

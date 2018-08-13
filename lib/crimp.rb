@@ -1,6 +1,13 @@
 require 'crimp/version'
 require 'digest'
 
+class Numeric
+  # see http://patshaughnessy.net/2014/1/9/how-big-is-a-bignum
+  def bignum?
+    self >= 4611686018427387904
+  end
+end
+
 module Crimp
   def self.signature(obj)
     Digest::MD5.hexdigest stringify(obj)
@@ -20,8 +27,6 @@ module Crimp
       parse_hash obj
     when String
       obj
-    when Integer
-      integer_to_string obj
     else
       to_string obj
     end
@@ -46,21 +51,24 @@ module Crimp
   end
 
   def self.to_string(obj)
-    "#{obj}#{obj.class}"
+    "#{obj}#{legacy_class(obj)}"
   end
 
   # This is for legacy/compatibilty reason:
   #
   # Ruby 2.1
   # 2.class => Fixnum
-  # Ruby > 2.4
+  # Ruby >= 2.4
   # 2.class => Integer
   #
   # Say you have a huge number of stored keys and you migrate your app from 2.1 to >= 2.4
   # this would cause a change of the signature for a subset of the keys which would be hard
   # to debug especially for nested data structures.
   #
-  def self.integer_to_string(obj)
-    "#{obj}Fixnum"
+  def self.legacy_class(obj)
+    return obj.class unless obj.is_a?(Numeric)
+    return 'Float'   if obj.is_a?(Float)
+    return 'Bignum'  if obj.bignum?
+    'Fixnum'
   end
 end

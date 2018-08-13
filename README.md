@@ -9,21 +9,21 @@ Creates an MD5 hash of a data structure made of numbers, strings, booleans, arra
 
 Add this line to your application's Gemfile:
 
-```ruby
+```
 $ gem 'crimp'
 
 ```
 
 And then execute:
 
-```ruby
+```
 $ bundle
 
 ```
 
 Or install it yourself as:
 
-```ruby
+```
 $ gem install crimp
 ```
 
@@ -105,7 +105,7 @@ iex(1)> :crypto.hash(:md5 , "abc") |> Base.encode16()
 "900150983CD24FB0D6963F7D28E17F72"
 ```
 
-If you want to build a similiar library with your language of choice you should be able to follow the simple specifications defined in `spec/crimp_spec.rb`
+If you want to build a similiar library with your language of choice you should be able to follow the simple specifications defined in `spec/crimp_spec.rb` to produce a string to be MD5 signed.
 
 
 ## Fine prints

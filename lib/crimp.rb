@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 require 'digest'
-
-module Crimp
+class Crimp
   class << self
     def signature(obj)
       Digest::MD5.hexdigest(to_s(obj))

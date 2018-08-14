@@ -81,7 +81,7 @@ describe 'Booleans' do
     expect(Crimp.to_a(false)).to eq([false, 'B'])
   end
 
-  it 'handles thruty values' do
+  it 'handles truthy values' do
     expect(Crimp.to_a(true)).to eq([true, 'B'])
   end
 end

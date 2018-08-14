@@ -3,27 +3,27 @@
 [![Build Status](https://travis-ci.org/BBC-News/crimp.png?branch=master)](https://travis-ci.org/BBC-News/crimp)
 [![Gem Version](https://badge.fury.io/rb/crimp.png)](http://badge.fury.io/rb/crimp)
 
-Creates an MD5 hash of a data structure made of numbers, strings, booleans, arrays, sets or hashes.
+Creates an MD5 hash from simple data structures made of numbers, strings, booleans, nil, arrays or hashes.
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
-```
+```ruby
 gem 'crimp'
 
 ```
 
 And then execute:
 
-```
+```shell
 $ bundle
 
 ```
 
 Or install it yourself as:
 
-```
+```shell
 $ gem install crimp
 ```
 
@@ -33,49 +33,16 @@ $ gem install crimp
 require 'crimp'
 
 Crimp.signature({ a: { b: 1 } })
-=> 1d30be4e0d607268513228ca38ef53cb
+=> "ac13c15d07e5fa3992fc6b15113db900"
 ```
 
-Under the hood Crimp reduces the passed data structure to a nested array of primitives (strings, numbers, booleans, nils) and a single byte to indicate the type of the primitive: `s` for strings, `n` for numbers, `b` for booleans, `_` for nils.
+## Multiplatform design
 
-|  Type   | byte |
-|   :-:   |  :-: |
-| String  |  `s` |
-| Number  |  `n` |
-| Boolean |  `b` |
-| nil     |  `_` |
+At the BBC we use Crimp to build keys for database and cache entries.
 
-You can verify it using the '#to_a' method:
+If you want to build a similar library with your language of choice you should be able to follow the simple specifications defined in `spec/crimp_spec.rb`. Using these simple rules you will produce a string ready to be MD5 signed.
 
-```ruby
-Crimp.to_a({ a: { b: 'c' } })
-=> [[["a", "s"], [[["b", "s"], ["c", "s"]]]]]
-```
-
-Please note the Arrays, Sets and Hash keys are sorted before signing.
-
-``` ruby
-Crimp.to_a([3,1,2])
-=> [[1, "n"], [2, "n"], [3, "n"]]
-```
-
-key/value tuples get sorted as well.
-
-``` ruby
-Crimp.to_a({ a: 1 })
-=> [[[1, "n"], ["a", "s"]]]
-```
-
-Finally, a last implemantation detail: before signing, the array get flattened to a single array and transformed to a single string, you can verify it with `#to_s`:
-
-```ruby
-Crimp.to_s({ a: 1 })
-=> 1nas
-```
-
-## Multiplatform
-
-At the BBC we use Crimp to build keys for database and cache entries. Is very important to be sure that we can produce the same key  in any language. MD5 is your friend:
+Once you get your string, is very important to be sure that you can produce the same key in any language. MD5 is your friend:
 
 ### Ruby
 
@@ -91,7 +58,6 @@ irb(main):002:0> Digest::MD5.hexdigest('abc')
 ```lua
 Lua 5.3.5  Copyright (C) 1994-2018 Lua.org, PUC-Rio
 > md5 = require 'md5'
-> m = md5.new()
 > md5.sumhexa('abc')
 900150983cd24fb0d6963f7d28e17f72
 ```
@@ -101,12 +67,18 @@ Lua 5.3.5  Copyright (C) 1994-2018 Lua.org, PUC-Rio
 ``` elixir
 Erlang/OTP 21 [erts-10.0.4] [source] [64-bit] [smp:4:4] [ds:4:4:10] [async-threads:1] [hipe] [dtrace]
 Interactive Elixir (1.7.2) - press Ctrl+C to exit (type h() ENTER for help)
-iex(1)> :crypto.hash(:md5 , "abc") |> Base.encode16()
-"900150983CD24FB0D6963F7D28E17F72"
+iex(1)> :crypto.hash(:md5 , "abc") |> Base.encode16() |> String.downcase
+"900150983cd24fb0d6963f7d28e17f72"
 ```
 
-If you want to build a similiar library with your language of choice you should be able to follow the simple specifications defined in `spec/crimp_spec.rb` to produce a string to be MD5 signed.
+### Node.js
 
+``` javascript
+> var crypto = require('crypto');
+undefined
+> crypto.createHash('md5').update('abc').digest('hex');
+'900150983cd24fb0d6963f7d28e17f72'
+```
 
 ## Fine prints
 
@@ -116,31 +88,86 @@ To make Crimp signatures reproducible in any platform we decided to ignore Ruby 
 Crimp.signature(:a) == Crimp.Signature('a')
 ```
 
+Also Sets get transformed to Arrays:
+
+``` ruby
+Crimp.signature(Set.new(['a', 'b'])) == Crimp.signature(['a', 'b'])
+```
+
 Also remember that collections gets sorted so:
 
 ``` ruby
-Crimp.signature([2,1]) == Crimp.Signature([1,2])
+Crimp.signature([2, 1]) == Crimp.signature([1, 2])
 ```
 
 Crimp will complain if you try to get a signature from an instance of some custom object:
 
 ``` ruby
 Crimp.signature(Object.new)
-=> ArgumentError
+=> TypeError: Expected a (String|Number|Boolean|Nil|Hash|Array), Got Object
 ```
-It is your responsibility to pass a hash/array representation of your object to Crimp.
+It is your responsibility to pass a compatible representation of your object to Crimp.
 
+## Implementation details
+
+Under the hood Crimp reduces the passed data structure to a nested array of primitives (strings, numbers, booleans, nils, etc.) and a single byte to indicate the type of the primitive:
+
+|  Type   | Byte |
+|   :-:   |  :-: |
+| String  |  `S` |
+| Number  |  `N` |
+| Boolean |  `B` |
+| nil     |  `_` |
+| Array   |  `A` |
+| Hash    |  `H` |
+
+You can verify it using the `#to_a` method:
+
+``` ruby
+Crimp.to_a({ a: 1 })
+=> [[[[[1, "N"], ["a", "S"]], "A"]], "H"]
+```
+Notice how Crimp marks the collection as Hash (`H`) and then transforms the tuple of key/values to an Array (`A`).
+
+Here's an example with nested hashes:
+
+```ruby
+Crimp.to_a({ a: { b: 'c' } })
+=> [[[[["a", "S"], [[[[["b", "S"], ["c", "S"]], "A"]], "H"]], "A"]], "H"]
+```
+
+Before signing Crimp transforms the collection of nested array to a string.
+
+```ruby
+Crimp.to_s({ a: { b: 'c' } })
+=> "aSbScSAHAH"
+```
+
+Please note the Arrays and Hash keys are sorted before signing.
+
+``` ruby
+Crimp.to_s([3, 1, 2])
+=> "1N2N3NA"
+```
+
+key/value tuples get sorted as well.
+
+``` ruby
+Crimp.to_s({ a: 1 })
+=> "1NaSAH"
+```
 
 ## Changelog
 
-| version | Changes                                                        |
-|---------|----------------------------------------------------------------|
-|`0.x`    | original version of Crimp. Use this for legacy projects.       |
-|`1.x`    | includes breaking changes in both method signature and output. |
+| Version | Changes                                                                    |
+|---------|----------------------------------------------------------------------------|
+|`v0.x`   | Original version of Crimp.                                                 |
+|`v0.2.0` | Crimp compatibility with Ruby >= 2.4, use this for legacy projects.        |
+|`v1.0.0` | Includes **breaking changes** and returns different signatures from `v0.2` |
 
 ## Contributing
 
-1. Fork it ( http://github.com/<my-github-username>/crimp/fork )
+1. Fork it ( http://github.com/BBC-News/crimp/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)

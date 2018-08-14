@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
   spec.version       = '1.0.0'
   spec.authors       = ['BBC News']
   spec.email         = ['D&ENewsFrameworksTeam@bbc.co.uk']
-  spec.summary       = 'Creates an md5 hash from numbers, strings, arrays, sets or hashes.'
+  spec.summary       = 'Creates an md5 hash from simple data structures.'
   spec.description   = ''
   spec.homepage      = 'https://www.bbc.co.uk/news'
   spec.license       = 'MIT'

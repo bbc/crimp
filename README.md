@@ -10,7 +10,7 @@ Creates an MD5 hash of a data structure made of numbers, strings, booleans, arra
 Add this line to your application's Gemfile:
 
 ```
-$ gem 'crimp'
+gem 'crimp'
 
 ```
 

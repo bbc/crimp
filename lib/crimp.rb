@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
-require 'digest'
+require 'digest/md5'
+
 class Crimp
   class << self
     def signature(obj)
@@ -16,11 +17,11 @@ class Crimp
 
       case obj
       when String
-        [obj, 's']
+        [obj, 'S']
       when Numeric
-        [obj, 'n']
+        [obj, 'N']
       when TrueClass, FalseClass
-        [obj, 'b']
+        [obj, 'B']
       when NilClass
         [nil, '_']
       when Enumerable
@@ -32,8 +33,11 @@ class Crimp
 
     private
 
-    def process_collection(obj)
-      obj.sort_by { |k, _| k.to_s }.map { |i| to_a(i) }
+    def process_collection(coll)
+      [
+        coll.sort_by { |k, _| k.to_s }.map { |obj| to_a(obj) },
+        coll.class.to_s[0]
+      ]
     end
 
     def coerce(obj)

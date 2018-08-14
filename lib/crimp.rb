@@ -27,7 +27,7 @@ class Crimp
       when Enumerable
         process_collection(obj)
       else
-        raise ArgumentError
+        raise TypeError, "Expected a (String|Number|Boolean|Nil|Hash|Array|Set), Got #{obj.class}."
       end
     end
 

@@ -263,6 +263,7 @@ end
 
 describe 'Objects' do
   it 'raise an error if not in the list of allowed primitives' do
-    expect { Crimp.signature(Object.new) }.to raise_error(ArgumentError)
+    expect { Crimp.signature(Object.new) }
+      .to raise_error(TypeError, 'Expected a (String|Number|Boolean|Nil|Hash|Array|Set), Got Object.')
   end
 end

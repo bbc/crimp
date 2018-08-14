@@ -175,12 +175,12 @@ describe 'Hashes' do
 end
 
 describe 'Sets' do
-  it 'handles sets' do
-    expect(Crimp.to_a(Set.new([1, 2]))).to eq([[[1, 'N'], [2, 'N']], 'S'])
+  it 'handles sets as arrays' do
+    expect(Crimp.to_a(Set.new([1, 2]))).to eq([[[1, 'N'], [2, 'N']], 'A'])
   end
 
-  it 'sorts sets' do
-    expect(Crimp.to_a(Set.new([2, 1]))).to eq([[[1, 'N'], [2, 'N']], 'S'])
+  it 'sorts sets as arrays' do
+    expect(Crimp.to_a(Set.new([2, 1]))).to eq([[[1, 'N'], [2, 'N']], 'A'])
   end
 end
 
@@ -264,6 +264,6 @@ end
 describe 'Objects' do
   it 'raise an error if not in the list of allowed primitives' do
     expect { Crimp.signature(Object.new) }
-      .to raise_error(TypeError, 'Expected a (String|Number|Boolean|Nil|Hash|Array|Set), Got Object.')
+      .to raise_error(TypeError, 'Expected a (String|Number|Boolean|Nil|Hash|Array), Got Object.')
   end
 end

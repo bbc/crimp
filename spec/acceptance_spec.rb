@@ -3,12 +3,12 @@ require 'yaml'
 require 'json'
 
 # other libraries could fetch the test data from Github.
-io    = File.join(__dir__, 'acceptance_data.yml')
-tests = YAML::load_file(io)
+file  = File.join(__dir__, 'acceptance_data.yml')
+tests = YAML::load_file(file)
 
 describe 'Multiplatform compatibility acceptance tests' do
   tests.each do |test|
-    input     = JSON.parse(test['json'].to_json)
+    input     = JSON.parse(test['json'].to_json, quirks_mode: true)
     signature = test['signature']
     string    = test['string']
 

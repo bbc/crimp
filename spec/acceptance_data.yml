@@ -1,9 +1,19 @@
 ---
 -
   desc: verify String handling
-  json: "abc"
+  json: abc
   string: abcS
   signature: c4449120506d97975c67be69719a78e2
+-
+  desc: verify integers handling
+  json: 1
+  string: 1N
+  signature: 594170053719896a11eb08ee513813d5
+-
+  desc: verify floats handling
+  json: 1.2
+  string: 1.2N
+  signature: f1ab6592886cd4b1b66ed55e73d9ab81
 -
   desc: verify Array handling
   json: [1, "a", 3]
@@ -21,9 +31,9 @@
   signature: 8cb44d69badda0f34b0bab6bb3e7fdbf
 -
   desc: verify nested hash
-  json: {"a": {"c": nil, "2": 2 }}
-  string: aS2S2NAcSnilSAHAH
-  signature: fed4e52658ed9ff0944126c6dfd60954
+  json: {"a": {"c": null, "2": 2 }}
+  string: aS2S2NA_cSAHAH
+  signature: bff3538075e4007c7679a7ba0d0a5f30
 -
   desc: verify nil values
   json: null

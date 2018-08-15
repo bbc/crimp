@@ -179,13 +179,25 @@ describe 'Sets' do
     expect(Crimp.to_a(Set.new([1, 2]))).to eq([[[1, 'N'], [2, 'N']], 'A'])
   end
 
+  it 'produces the same signature for Array Sets and Arrays' do
+    expect(Crimp.signature(Set.new([1, 2]))).to eq(Crimp.signature([2, 1]))
+  end
+
+  it 'handles Hash sets as arrays' do
+    expect(Crimp.to_a(Set.new({ 1 => 2 }))).to eq([[[[[1, "N"], [2, "N"]], "A"]], "A"])
+  end
+
+  it 'does NOT produce the same signature for Hash Sets and Hashes' do
+    expect(Crimp.signature(Set.new({ 1 => 2 }))).to_not eq(Crimp.signature({ 1 => 2 }))
+  end
+
   it 'sorts sets as arrays' do
     expect(Crimp.to_a(Set.new([2, 1]))).to eq([[[1, 'N'], [2, 'N']], 'A'])
   end
 end
 
 describe 'nested data structures' do
-  it 'handles an hash with nested arrays' do
+  it 'handles a hash with nested arrays and hashes' do
     obj = { a: [1, 2], b: { c: 'd' } }
 
     expected = [

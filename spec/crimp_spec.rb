@@ -110,6 +110,16 @@ describe 'Arrays' do
   end
 end
 
+describe 'Nested Arrays' do
+  it 'sorts arrays with a single nested array ' do
+    expect(Crimp.to_s([3, [4, 2], 1])).to eq('1N3N2N4NAA')
+  end
+
+  it 'sorts arrays with a multiple nested arrays' do
+    expect(Crimp.to_s([3, [4, 2], 1, [6, 5]])).to eq('1N3N2N4NA5N6NAA')
+  end
+end
+
 describe 'Hashes' do
   it 'handles hashes as collection of primitives' do
     expected = [
@@ -133,15 +143,15 @@ describe 'Hashes' do
       [
         [
           [
-            ['a', 'S'],
-            ['b', 'S']
+            [1, 'N'],
+            ['e', 'S']
           ],
           'A'
         ],
         [
           [
-            [1, 'N'],
-            ['e', 'S']
+            ['a', 'S'],
+            ['b', 'S']
           ],
           'A'
         ],

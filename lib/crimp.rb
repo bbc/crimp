@@ -2,6 +2,7 @@
 
 require 'digest/md5'
 require 'set'
+require 'deepsort'
 
 class Crimp
   class << self
@@ -37,7 +38,7 @@ class Crimp
     private
 
     def reduce(coll)
-      coll.sort_by { |k, _| k.to_s }.map { |obj| to_a(obj) }
+      coll.deep_sort_by { |o| o.to_s }.map { |obj| to_a(obj) }
     end
 
     def coerce(obj)

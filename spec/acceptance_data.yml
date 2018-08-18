@@ -25,6 +25,22 @@
   string: _1N1S3NA
   signature: 518e7bb17674f6acbb296845862a152d
 -
+  desc: verify Array sorting with capital letters
+  json: ["a", "A", "b", "B"]
+  string: ASBSaSbSA
+  signature: f6692ab4bc94b35e61ec15c2d1891734
+-
+  desc: verify nested Arrays
+  json: ["a", 1, ["b", "2"]]
+  string: 1N2SbSAaSA
+  signature: 3aaa58da4841eaeb41d3726d2c6fd875
+-
+  desc: verify nested Arrays
+  json: [["b", "2"], "a", 1]
+  string: 1N2SbSAaSA
+  signature: 3aaa58da4841eaeb41d3726d2c6fd875
+
+-
   desc: verify hash like data structures
   json: {"a": 1}
   string: 1NaSAH

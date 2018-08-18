@@ -38,7 +38,7 @@ class Crimp
     private
 
     def reduce(coll)
-      coll.deep_sort_by { |o| o.to_s }.map { |obj| to_a(obj) }
+      coll.deep_sort_by { |obj| obj.to_s }.map { |obj| to_a(obj) }
     end
 
     def coerce(obj)

@@ -108,6 +108,10 @@ describe 'Arrays' do
 
     expect(Crimp.signature(arr1)).to_not eq(Crimp.signature(arr2))
   end
+
+  it 'sorts an array with mixed strings and symbols' do
+    expect(Crimp.to_s(["b", :a, "c"])).to eq 'aSbScSA'
+  end
 end
 
 describe 'Nested Arrays' do
@@ -181,6 +185,10 @@ describe 'Hashes' do
     hsh2 = { a: 2, b: 1 }
 
     expect(Crimp.signature(hsh1)).to_not eq(Crimp.signature(hsh2))
+  end
+
+  it 'does NOT sort correctly an hash with mixed key types' do
+    expect(Crimp.to_s({:b => "c", "d" => "a"})).to eq 'aSdSAbScSAH'
   end
 end
 

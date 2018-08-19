@@ -82,11 +82,15 @@ undefined
 
 ## Fine prints
 
+### Symbols
+
 To make Crimp signatures reproducible in any platform we decided to ignore Ruby symbols and treat them as strings, so:
 
 ``` ruby
 Crimp.signature(:a) == Crimp.Signature('a')
 ```
+
+### Sets
 
 Also Sets get transformed to Arrays:
 
@@ -94,11 +98,23 @@ Also Sets get transformed to Arrays:
 Crimp.signature(Set.new(['a', 'b'])) == Crimp.signature(['a', 'b'])
 ```
 
-Also remember that collections gets sorted so:
+### Sorting of collections
 
-``` ruby
-Crimp.signature([2, 1]) == Crimp.signature([1, 2])
+Crimp signatures are generated against sorted collections.
+
+```ruby
+Crimp.signature([1, 2]) == Crimp.signature([2, 1])
+Crimp.signature({'b' => 2, 'a' => 1}) == Crimp.signature({'a' => 1, 'b' => 2})
 ```
+
+Cimp also sorts nested collections.
+
+```ruby
+Crimp.signature([1, [3, 2], 4]) == Crimp.signature([4, [2, 3], 1])
+Crimp.signature({'b' => {'d' => 2,'c' => 1}, 'a' => [3, 1, 2]}) == Crimp.signature({'a' => [1, 2, 3], 'b' => { 'c' => 1, 'd' => 2 }})
+```
+
+### Custom objects
 
 Crimp will complain if you try to get a signature from an instance of some custom object:
 

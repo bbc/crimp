@@ -13,7 +13,7 @@ describe 'Multiplatform compatibility acceptance tests' do
     string    = test['string']
 
     specify "#{test['desc']} string"  do
-      expect(Crimp.to_s(input)).to eq(string)
+      expect(Crimp.notation(input)).to eq(string)
     end
 
     specify "#{test['desc']} signature"  do

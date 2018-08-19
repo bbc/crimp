@@ -121,10 +121,10 @@ Under the hood Crimp reduces the passed data structure to a nested array of prim
 | Array   |  `A` |
 | Hash    |  `H` |
 
-You can verify it using the `#to_a` method:
+You can verify it using the `#reduce` method:
 
 ``` ruby
-Crimp.to_a({ a: 1 })
+Crimp.reduce({ a: 1 })
 => [[[[[1, "N"], ["a", "S"]], "A"]], "H"]
 ```
 Notice how Crimp marks the collection as Hash (`H`) and then transforms the tuple of key/values to an Array (`A`).
@@ -132,28 +132,28 @@ Notice how Crimp marks the collection as Hash (`H`) and then transforms the tupl
 Here's an example with nested hashes:
 
 ```ruby
-Crimp.to_a({ a: { b: 'c' } })
+Crimp.reduce({ a: { b: 'c' } })
 => [[[[["a", "S"], [[[[["b", "S"], ["c", "S"]], "A"]], "H"]], "A"]], "H"]
 ```
 
 Before signing Crimp transforms the collection of nested array to a string.
 
 ```ruby
-Crimp.to_s({ a: { b: 'c' } })
+Crimp.notation({ a: { b: 'c' } })
 => "aSbScSAHAH"
 ```
 
 Please note the Arrays and Hash keys are sorted before signing.
 
 ``` ruby
-Crimp.to_s([3, 1, 2])
+Crimp.notation([3, 1, 2])
 => "1N2N3NA"
 ```
 
 key/value tuples get sorted as well.
 
 ``` ruby
-Crimp.to_s({ a: 1 })
+Crimp.notation({ a: 1 })
 => "1NaSAH"
 ```
 

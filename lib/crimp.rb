@@ -7,14 +7,14 @@ require 'deepsort'
 class Crimp
   class << self
     def signature(obj)
-      Digest::MD5.hexdigest(to_s(obj))
+      Digest::MD5.hexdigest(notation(obj))
     end
 
-    def to_s(obj)
-      to_a(obj).flatten.join
+    def notation(obj)
+      reduce(obj).flatten.join
     end
 
-    def to_a(obj)
+    def reduce(obj)
       obj = coerce(obj)
 
       case obj
@@ -27,9 +27,9 @@ class Crimp
       when NilClass
         [nil, '_']
       when Array
-        [reduce(obj), 'A']
+        [sort(obj), 'A']
       when Hash
-        [reduce(obj), 'H']
+        [sort(obj), 'H']
       else
         raise TypeError, "Expected a (String|Number|Boolean|Nil|Hash|Array), Got #{obj.class}."
       end
@@ -37,8 +37,8 @@ class Crimp
 
     private
 
-    def reduce(coll)
-      coll.deep_sort_by { |obj| obj.to_s }.map { |obj| to_a(obj) }
+    def sort(coll)
+      coll.deep_sort_by { |obj| obj.to_s }.map { |obj| reduce(obj) }
     end
 
     def coerce(obj)

@@ -8,91 +8,91 @@ describe '.signature' do
   end
 end
 
-describe '.to_a' do
-  it 'returns an array of tuples representing the value and the type' do
-    expect(Crimp.to_a([123, 'abc'])).to eq([[[123, 'N'], ['abc', 'S']], 'A'])
-  end
-
-  it "returns a tuple [val, 'N'] for numeric primitives" do
-    expect(Crimp.to_a(123)).to eq([123, 'N'])
-  end
-
-  it "returns a tuple [val, 'S'] for string primitives" do
-    expect(Crimp.to_a('abc')).to eq(['abc', 'S'])
-  end
-
-  it "returns a tuple [[], 'A'] for empty arrays" do
-    expect(Crimp.to_a([])).to eq([[], 'A'])
+describe '.notation' do
+  it 'returns a string representation of the passed data' do
+    expect(Crimp.notation([123, 'abc'])).to eq('123NabcSA')
   end
 end
 
-describe '.to_s' do
-  it 'returns a string representation of the passed data' do
-    expect(Crimp.to_s([123, 'abc'])).to eq('123NabcSA')
+describe '.reduce' do
+  it 'returns an array of tuples representing the value and the type' do
+    expect(Crimp.reduce([123, 'abc'])).to eq([[[123, 'N'], ['abc', 'S']], 'A'])
+  end
+
+  it "returns a tuple [val, 'N'] for numeric primitives" do
+    expect(Crimp.reduce(123)).to eq([123, 'N'])
+  end
+
+  it "returns a tuple [val, 'S'] for string primitives" do
+    expect(Crimp.reduce('abc')).to eq(['abc', 'S'])
+  end
+
+  it "returns a tuple [[], 'A'] for empty arrays" do
+    expect(Crimp.reduce([])).to eq([[], 'A'])
   end
 end
 
 describe 'Strings' do
   it 'handles strings' do
-    expect(Crimp.to_a('a')).to eq(['a', 'S'])
+    expect(Crimp.reduce('a')).to eq(['a', 'S'])
   end
 
   it 'handles capitalised strings with no modifications' do
-    expect(Crimp.to_a('A')).to eq(['A', 'S'])
+    expect(Crimp.reduce('A')).to eq(['A', 'S'])
   end
 
   it 'handles utf-8 strings' do
-    expect(Crimp.to_a('å')).to eq(['å', 'S'])
+    expect(Crimp.reduce('å')).to eq(['å', 'S'])
   end
 
   it 'treats symbols like strings' do
-    expect(Crimp.to_a(:a)).to eq(['a', 'S'])
+    expect(Crimp.reduce(:a)).to eq(['a', 'S'])
   end
 
   it 'treats empty strings like strings' do
-    expect(Crimp.to_a('')).to eq(['', 'S'])
+    expect(Crimp.reduce('')).to eq(['', 'S'])
   end
 end
 
 describe 'Numbers' do
   it 'handles integers' do
-    expect(Crimp.to_a(1)).to eq([1, 'N'])
+    expect(Crimp.reduce(1)).to eq([1, 'N'])
   end
 
   it 'handles floats' do
-    expect(Crimp.to_a(3.14)).to eq([3.14, 'N'])
+    expect(Crimp.reduce(3.14)).to eq([3.14, 'N'])
   end
 
   it 'handles bignums' do
     bignum = 10_000_000_000_000_000_000
 
-    expect(Crimp.to_a(bignum)).to eq([bignum, 'N'])
+    expect(Crimp.reduce(bignum)).to eq([bignum, 'N'])
   end
 end
 
 describe 'Nils' do
   it 'handles nils' do
-    expect(Crimp.to_a(nil)).to eq([nil, '_'])
+    expect(Crimp.reduce(nil)).to eq([nil, '_'])
   end
 end
 
 describe 'Booleans' do
   it 'handles falsey values' do
-    expect(Crimp.to_a(false)).to eq([false, 'B'])
+    expect(Crimp.reduce(false)).to eq([false, 'B'])
   end
 
   it 'handles truthy values' do
-    expect(Crimp.to_a(true)).to eq([true, 'B'])
+    expect(Crimp.reduce(true)).to eq([true, 'B'])
   end
 end
 
 describe 'Arrays' do
   it 'handles arrays as collection of primitives' do
-    expect(Crimp.to_a([1, 2])).to eq([[[1, 'N'], [2, 'N']], 'A'])
+    expect(Crimp.reduce([1, 2])).to eq([[[1, 'N'], [2, 'N']], 'A'])
   end
 
   it 'sorts arrays' do
-    expect(Crimp.to_a([2, 1])).to eq([[[1, 'N'], [2, 'N']], 'A'])
+    expect(Crimp.reduce([2, 1])).to eq([[[1, 'N'], [2, 'N']], 'A'])
   end
 
   it 'returns the same signature for two arrays containing the same (unordered) values' do
@@ -110,17 +110,17 @@ describe 'Arrays' do
   end
 
   it 'sorts an array with mixed strings and symbols' do
-    expect(Crimp.to_s(["b", :a, "c"])).to eq 'aSbScSA'
+    expect(Crimp.notation(["b", :a, "c"])).to eq 'aSbScSA'
   end
 end
 
 describe 'Nested Arrays' do
   it 'sorts arrays with a single nested array ' do
-    expect(Crimp.to_s([3, [4, 2], 1])).to eq('1N3N2N4NAA')
+    expect(Crimp.notation([3, [4, 2], 1])).to eq('1N3N2N4NAA')
   end
 
   it 'sorts arrays with a multiple nested arrays' do
-    expect(Crimp.to_s([3, [4, 2], 1, [6, 5]])).to eq('1N3N2N4NA5N6NAA')
+    expect(Crimp.notation([3, [4, 2], 1, [6, 5]])).to eq('1N3N2N4NA5N6NAA')
   end
 end
 
@@ -139,7 +139,7 @@ describe 'Hashes' do
       'H'
     ]
 
-    expect(Crimp.to_a({a: 'b'})).to eq(expected)
+    expect(Crimp.reduce({a: 'b'})).to eq(expected)
   end
 
   it 'sorts hashes by key and then sorts the resulting pair of tuples' do
@@ -170,7 +170,7 @@ describe 'Hashes' do
       'H'
     ]
 
-    expect(Crimp.to_a({ a: 'b', f: 'c', 'e' => 1 })).to eq(expected)
+    expect(Crimp.reduce({ a: 'b', f: 'c', 'e' => 1 })).to eq(expected)
   end
 
   it 'returns the same signature for two hashes containing the same (unordered) values' do
@@ -187,14 +187,14 @@ describe 'Hashes' do
     expect(Crimp.signature(hsh1)).to_not eq(Crimp.signature(hsh2))
   end
 
-  it 'does NOT sort correctly an hash with mixed key types' do
-    expect(Crimp.to_s({:b => "c", "d" => "a"})).to eq 'aSdSAbScSAH'
+  it 'sorts an hash with mixed key types' do
+    expect(Crimp.notation({:b => "c", "d" => "a"})).to eq 'aSdSAbScSAH'
   end
 end
 
 describe 'Sets' do
   it 'handles sets as arrays' do
-    expect(Crimp.to_a(Set.new([1, 2]))).to eq([[[1, 'N'], [2, 'N']], 'A'])
+    expect(Crimp.reduce(Set.new([1, 2]))).to eq([[[1, 'N'], [2, 'N']], 'A'])
   end
 
   it 'produces the same signature for Array Sets and Arrays' do
@@ -202,7 +202,7 @@ describe 'Sets' do
   end
 
   it 'handles Hash sets as arrays' do
-    expect(Crimp.to_a(Set.new({ 1 => 2 }))).to eq([[[[[1, "N"], [2, "N"]], "A"]], "A"])
+    expect(Crimp.reduce(Set.new({ 1 => 2 }))).to eq([[[[[1, "N"], [2, "N"]], "A"]], "A"])
   end
 
   it 'does NOT produce the same signature for Hash Sets and Hashes' do
@@ -210,7 +210,7 @@ describe 'Sets' do
   end
 
   it 'sorts sets as arrays' do
-    expect(Crimp.to_a(Set.new([2, 1]))).to eq([[[1, 'N'], [2, 'N']], 'A'])
+    expect(Crimp.reduce(Set.new([2, 1]))).to eq([[[1, 'N'], [2, 'N']], 'A'])
   end
 end
 
@@ -252,7 +252,7 @@ describe 'nested data structures' do
       'H'
     ]
 
-    expect(Crimp.to_a(obj)).to eq(expected)
+    expect(Crimp.reduce(obj)).to eq(expected)
   end
 
   it 'handles an array of hashes' do
@@ -287,7 +287,7 @@ describe 'nested data structures' do
       'A'
     ]
 
-    expect(Crimp.to_a(obj)).to eq(expected)
+    expect(Crimp.reduce(obj)).to eq(expected)
   end
 end
 

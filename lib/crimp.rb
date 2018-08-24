@@ -11,10 +11,10 @@ class Crimp
     end
 
     def notation(obj)
-      reduce(obj).flatten.join
+      annotate(obj).flatten.join
     end
 
-    def reduce(obj)
+    def annotate(obj)
       obj = coerce(obj)
 
       case obj
@@ -38,7 +38,7 @@ class Crimp
     private
 
     def sort(coll)
-      coll.deep_sort_by { |obj| obj.to_s }.map { |obj| reduce(obj) }
+      coll.deep_sort_by { |obj| obj.to_s }.map { |obj| annotate(obj) }
     end
 
     def coerce(obj)

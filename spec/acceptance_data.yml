@@ -39,7 +39,6 @@
   json: [["b", "2"], "a", 1]
   string: 1N2SbSAaSA
   signature: 3aaa58da4841eaeb41d3726d2c6fd875
-
 -
   desc: verify hash like data structures
   json: {"a": 1}
@@ -51,7 +50,7 @@
   string: aS2S2NA_cSAHAH
   signature: bff3538075e4007c7679a7ba0d0a5f30
 -
-  desc: verify nil values
+  desc: verify null values
   json: null
   string: _
   signature: b14a7b8059d9c055954c92674ce60032

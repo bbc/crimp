@@ -107,7 +107,7 @@ Crimp.signature([1, 2]) == Crimp.signature([2, 1])
 Crimp.signature({'b' => 2, 'a' => 1}) == Crimp.signature({'a' => 1, 'b' => 2})
 ```
 
-Cimp also sorts nested collections.
+Crimp also sorts nested collections.
 
 ```ruby
 Crimp.signature([1, [3, 2], 4]) == Crimp.signature([4, [2, 3], 1])
@@ -126,7 +126,7 @@ It is your responsibility to pass a compatible representation of your object to 
 
 ## Implementation details
 
-Under the hood Crimp reduces the passed data structure to a nested array of primitives (strings, numbers, booleans, nils, etc.) and a single byte to indicate the type of the primitive:
+Under the hood Crimp annotates the passed data structure to a nested array of primitives (strings, numbers, booleans, nils, etc.) and a single byte to indicate the type of the primitive:
 
 |  Type   | Byte |
 |   :-:   |  :-: |
@@ -137,10 +137,10 @@ Under the hood Crimp reduces the passed data structure to a nested array of prim
 | Array   |  `A` |
 | Hash    |  `H` |
 
-You can verify it using the `#reduce` method:
+You can verify it using the `#annotate` method:
 
 ``` ruby
-Crimp.reduce({ a: 1 })
+Crimp.annotate({ a: 1 })
 => [[[[[1, "N"], ["a", "S"]], "A"]], "H"]
 ```
 Notice how Crimp marks the collection as Hash (`H`) and then transforms the tuple of key/values to an Array (`A`).
@@ -148,7 +148,7 @@ Notice how Crimp marks the collection as Hash (`H`) and then transforms the tupl
 Here's an example with nested hashes:
 
 ```ruby
-Crimp.reduce({ a: { b: 'c' } })
+Crimp.annotate({ a: { b: 'c' } })
 => [[[[["a", "S"], [[[[["b", "S"], ["c", "S"]], "A"]], "H"]], "A"]], "H"]
 ```
 

@@ -1,74 +1,52 @@
-require 'crimp/version'
-require 'digest'
+# frozen_string_literal: true
 
-class Numeric
-  # see http://patshaughnessy.net/2014/1/9/how-big-is-a-bignum
-  def bignum?
-    self >= 4611686018427387904
-  end
-end
+require 'digest/md5'
+require 'set'
+require 'deepsort'
 
-module Crimp
-  def self.signature(obj)
-    Digest::MD5.hexdigest stringify(obj)
-  end
-
-  def self.stringify(obj)
-    convert(obj).tap { |o| return o.class == String ? o : to_string(o) }
-  end
-
-  private
-
-  def self.convert(obj)
-    case obj
-    when Array
-      parse_array obj
-    when Hash
-      parse_hash obj
-    when String
-      obj
-    else
-      to_string obj
+class Crimp
+  class << self
+    def signature(obj)
+      Digest::MD5.hexdigest(notation(obj))
     end
-  end
 
-  def self.hash_to_array(hash)
-    [].tap do |a|
-      hash.each { |k, v| a << pair_to_string(k, v) }
+    def notation(obj)
+      annotate(obj).flatten.join
     end
-  end
 
-  def self.pair_to_string(k, v)
-    "#{stringify k}=>#{stringify v}"
-  end
+    def annotate(obj)
+      obj = coerce(obj)
 
-  def self.parse_array(array)
-    array.map { |e| stringify(e) }.sort
-  end
+      case obj
+      when String
+        [obj, 'S']
+      when Numeric
+        [obj, 'N']
+      when TrueClass, FalseClass
+        [obj, 'B']
+      when NilClass
+        [nil, '_']
+      when Array
+        [sort(obj), 'A']
+      when Hash
+        [sort(obj), 'H']
+      else
+        raise TypeError, "Expected a (String|Number|Boolean|Nil|Hash|Array), Got #{obj.class}."
+      end
+    end
 
-  def self.parse_hash(hash)
-    stringify hash_to_array(hash)
-  end
+    private
 
-  def self.to_string(obj)
-    "#{obj}#{legacy_class(obj)}"
-  end
+    def sort(coll)
+      coll.deep_sort_by { |obj| obj.to_s }.map { |obj| annotate(obj) }
+    end
 
-  # This is for legacy/compatibilty reason:
-  #
-  # Ruby 2.1
-  # 2.class => Fixnum
-  # Ruby >= 2.4
-  # 2.class => Integer
-  #
-  # Say you have a huge number of stored keys and you migrate your app from 2.1 to >= 2.4
-  # this would cause a change of the signature for a subset of the keys which would be hard
-  # to debug especially for nested data structures.
-  #
-  def self.legacy_class(obj)
-    return obj.class unless obj.is_a?(Numeric)
-    return 'Float'   if obj.is_a?(Float)
-    return 'Bignum'  if obj.bignum?
-    'Fixnum'
+    def coerce(obj)
+      case obj
+      when Symbol then obj.to_s
+      when Set    then obj.to_a
+      else obj
+      end
+    end
   end
 end

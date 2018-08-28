@@ -1,6 +1,9 @@
 $LOAD_PATH.unshift File.join(File.dirname(__FILE__), 'lib')
 
-require 'bundler/gem_tasks'
-require 'rake/rspec'
+require 'rspec/core/rake_task'
 
-task default: :spec
+RSpec::Core::RakeTask.new :specs do |task|
+  task.pattern = Dir['spec/**/*_spec.rb']
+end
+
+task default: [:specs]

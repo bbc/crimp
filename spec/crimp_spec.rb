@@ -1,99 +1,299 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
-describe Crimp do
-  let(:hash) { { a: { b: 'b', c: 'c' }, d: 'd' } }
-  let(:hash_with_numbers) { { a: { b: 1, c: 3.14 }, d: 'd' } }
-  let(:hash_unordered) { { d: 'd', a: { c: 'c', b: 'b' } } }
-  let(:array) { [1, 2, 3, [4, [5, 6]]] }
-  let(:array_unordered) { [3, 2, 1, [[5, 6], 4]] }
+describe '.signature' do
+  it 'will return an md5 hash' do
+    expect(Crimp.signature('a')).to eq 'd132c0567a5964930f9ee5f14e779e32'
+  end
+end
 
-  describe '.signature' do
-    context 'given a Hash' do
-      it 'returns MD5 hash of stringified Hash' do
-        expect(subject.signature(hash)).to eq('68d07febc4f47f56fa6ef5de063a77b1')
-      end
+describe '.notation' do
+  it 'returns a string representation of the passed data' do
+    expect(Crimp.notation([123, 'abc'])).to eq('123NabcSA')
+  end
+end
 
-      it 'does not modify original hash' do
-        original_hash = { d: 'd', a: { c: 'c', b: 'b' } }
-        expected_hash = { d: 'd', a: { c: 'c', b: 'b' } }
-
-        subject.signature(original_hash)
-
-        expect(original_hash).to eq(expected_hash)
-      end
-    end
-
-    context 'Given an hash with numbers' do
-      it 'returns MD5 hash of stringified hash' do
-        expect(subject.signature(hash_with_numbers)).to eq 'b1fec09904b6ff36c92e3bd48234def7'
-      end
-    end
-
-    context 'given an Array' do
-      it 'returns MD5 hash of stringified Array' do
-        expect(subject.signature(array)).to eq('4dc4e1161c9315db0bc43c0201b3ec05')
-      end
-
-      it 'does not modify original array' do
-        original_array = [5, 4, 2, 6, [5, 7, 2]]
-        expected_array = [5, 4, 2, 6, [5, 7, 2]]
-
-        subject.signature(original_array)
-
-        expect(original_array).to eq(expected_array)
-      end
-    end
-
-    context 'Given an integer' do
-      it 'returns MD5 hash of an Integer' do
-        expect(subject.signature(123)).to eq '519d3381631851be66711f6d7dfbb4f8'
-      end
-    end
-
-    context 'Given an Bignum' do
-      it 'returns MD5 hash of a Bignum' do
-        expect(subject.signature(9999999999999999999)).to eq 'f00e75abca720e18fd4213e2a6de96c6'
-      end
-    end
-
-    context 'Given an float' do
-      it 'returns MD5 hash of a Float' do
-        expect(subject.signature(3.14)).to eq 'b07d506e3701fddd083ae9095df43218'
-      end
-    end
+describe '.annotate' do
+  it 'returns an array of tuples representing the value and the type' do
+    expect(Crimp.annotate([123, 'abc'])).to eq([[[123, 'N'], ['abc', 'S']], 'A'])
   end
 
-  describe '.stringify' do
-    context 'given a Hash' do
-      it 'returns equal strings for differently ordered hashes' do
-        expect(subject.stringify(hash)).to eq(subject.stringify(hash_unordered))
-      end
+  it "returns a tuple [val, 'N'] for numeric primitives" do
+    expect(Crimp.annotate(123)).to eq([123, 'N'])
+  end
 
-      it 'does not modify original hash' do
-        original_hash = { d: 'd', a: { c: 'c', b: 'b' } }
-        expected_hash = { d: 'd', a: { c: 'c', b: 'b' } }
+  it "returns a tuple [val, 'S'] for string primitives" do
+    expect(Crimp.annotate('abc')).to eq(['abc', 'S'])
+  end
 
-        subject.signature(original_hash)
+  it "returns a tuple [[], 'A'] for empty arrays" do
+    expect(Crimp.annotate([])).to eq([[], 'A'])
+  end
+end
 
-        expect(original_hash).to eq(expected_hash)
-      end
-    end
+describe 'Strings' do
+  it 'handles strings' do
+    expect(Crimp.annotate('a')).to eq(['a', 'S'])
+  end
 
-    context 'given an Array' do
-      specify { expect(subject.stringify(array)).to be_a String }
+  it 'handles capitalised strings with no modifications' do
+    expect(Crimp.annotate('A')).to eq(['A', 'S'])
+  end
 
-      it 'returns equal strings for differently ordered arrays' do
-        expect(subject.stringify(array)).to eq(subject.stringify(array_unordered))
-      end
+  it 'handles utf-8 strings' do
+    expect(Crimp.annotate('å')).to eq(['å', 'S'])
+  end
 
-      it 'does not modify original array' do
-        original_array = [5, 4, 2, 6, [5, 7, 2]]
-        expected_array = [5, 4, 2, 6, [5, 7, 2]]
+  it 'treats symbols like strings' do
+    expect(Crimp.annotate(:a)).to eq(['a', 'S'])
+  end
 
-        subject.signature(original_array)
+  it 'treats empty strings like strings' do
+    expect(Crimp.annotate('')).to eq(['', 'S'])
+  end
+end
 
-        expect(original_array).to eq(expected_array)
-      end
-    end
+describe 'Numbers' do
+  it 'handles integers' do
+    expect(Crimp.annotate(1)).to eq([1, 'N'])
+  end
+
+  it 'handles floats' do
+    expect(Crimp.annotate(3.14)).to eq([3.14, 'N'])
+  end
+
+  it 'handles bignums' do
+    bignum = 10_000_000_000_000_000_000
+
+    expect(Crimp.annotate(bignum)).to eq([bignum, 'N'])
+  end
+end
+
+describe 'Nils' do
+  it 'handles nils' do
+    expect(Crimp.annotate(nil)).to eq([nil, '_'])
+  end
+end
+
+describe 'Booleans' do
+  it 'handles falsey values' do
+    expect(Crimp.annotate(false)).to eq([false, 'B'])
+  end
+
+  it 'handles truthy values' do
+    expect(Crimp.annotate(true)).to eq([true, 'B'])
+  end
+end
+
+describe 'Arrays' do
+  it 'handles arrays as collection of primitives' do
+    expect(Crimp.annotate([1, 2])).to eq([[[1, 'N'], [2, 'N']], 'A'])
+  end
+
+  it 'sorts arrays' do
+    expect(Crimp.annotate([2, 1])).to eq([[[1, 'N'], [2, 'N']], 'A'])
+  end
+
+  it 'returns the same signature for two arrays containing the same (unordered) values' do
+    arr1 = [1, 2, 3]
+    arr2 = [2, 1, 3]
+
+    expect(Crimp.signature(arr1)).to eq(Crimp.signature(arr2))
+  end
+
+  it 'does not return the same signature for two arrays containing different values' do
+    arr1 = [1, 2, 3]
+    arr2 = ['1', '2', '3']
+
+    expect(Crimp.signature(arr1)).to_not eq(Crimp.signature(arr2))
+  end
+
+  it 'sorts an array with mixed strings and symbols' do
+    expect(Crimp.notation(["b", :a, "c"])).to eq 'aSbScSA'
+  end
+end
+
+describe 'Nested Arrays' do
+  it 'sorts arrays with a single nested array' do
+    expect(Crimp.notation([3, [4, 2], 1])).to eq('1N3N2N4NAA')
+  end
+
+  it 'sorts arrays with a multiple nested arrays' do
+    expect(Crimp.notation([3, [4, 2], 1, [6, 5]])).to eq('1N3N2N4NA5N6NAA')
+  end
+end
+
+describe 'Hashes' do
+  it 'handles hashes as collection of primitives' do
+    expected = [
+      [
+        [
+          [
+            ['a', 'S'],
+            ['b', 'S']
+          ],
+          'A'
+        ]
+      ],
+      'H'
+    ]
+
+    expect(Crimp.annotate({a: 'b'})).to eq(expected)
+  end
+
+  it 'sorts hashes by key and then sorts the resulting pair of tuples' do
+    expected = [
+      [
+        [
+          [
+            [1, 'N'],
+            ['e', 'S']
+          ],
+          'A'
+        ],
+        [
+          [
+            ['a', 'S'],
+            ['b', 'S']
+          ],
+          'A'
+        ],
+        [
+          [
+            ['c', 'S'],
+            ['f', 'S']
+          ],
+          'A'
+        ]
+      ],
+      'H'
+    ]
+
+    expect(Crimp.annotate({ a: 'b', f: 'c', 'e' => 1 })).to eq(expected)
+  end
+
+  it 'returns the same signature for two hashes containing the same (unordered) values' do
+    hsh1 = { a: 2, b: 1 }
+    hsh2 = { b: 1, a: 2 }
+
+    expect(Crimp.signature(hsh1)).to eq(Crimp.signature(hsh2))
+  end
+
+  it 'does not return the same signature for two hashes containing the different values' do
+    hsh1 = { a: 1, b: 2 }
+    hsh2 = { a: 2, b: 1 }
+
+    expect(Crimp.signature(hsh1)).to_not eq(Crimp.signature(hsh2))
+  end
+
+  it 'sorts an hash with mixed key types' do
+    expect(Crimp.notation({:b => "c", "d" => "a"})).to eq 'aSdSAbScSAH'
+  end
+end
+
+describe 'Sets' do
+  it 'handles sets as arrays' do
+    expect(Crimp.annotate(Set.new([1, 2]))).to eq([[[1, 'N'], [2, 'N']], 'A'])
+  end
+
+  it 'produces the same signature for Array Sets and Arrays' do
+    expect(Crimp.signature(Set.new([1, 2]))).to eq(Crimp.signature([2, 1]))
+  end
+
+  it 'handles Hash sets as arrays' do
+    expect(Crimp.annotate(Set.new({ 1 => 2 }))).to eq([[[[[1, "N"], [2, "N"]], "A"]], "A"])
+  end
+
+  it 'does NOT produce the same signature for Hash Sets and Hashes' do
+    expect(Crimp.signature(Set.new({ 1 => 2 }))).to_not eq(Crimp.signature({ 1 => 2 }))
+  end
+
+  it 'sorts sets as arrays' do
+    expect(Crimp.annotate(Set.new([2, 1]))).to eq([[[1, 'N'], [2, 'N']], 'A'])
+  end
+end
+
+describe 'nested data structures' do
+  it 'handles a hash with nested arrays and hashes' do
+    obj = { a: [1, 2], b: { c: 'd' } }
+
+    expected = [
+      [
+        [
+          [
+            [
+              [
+                [1, 'N'],
+                [2, 'N']
+              ],
+              'A'
+            ],
+            ['a', 'S']
+          ],
+          'A'
+        ],
+        [
+          [
+            ['b', 'S'],
+            [
+              [
+                [
+                  [
+                    ['c', 'S'],
+                    ['d', 'S']
+                  ],
+                  'A']
+              ],
+              'H']
+          ],
+          'A']
+      ],
+      'H'
+    ]
+
+    expect(Crimp.annotate(obj)).to eq(expected)
+  end
+
+  it 'handles an array of hashes' do
+    obj = [{ a: 1 }, { b: 2 }]
+    expected= [
+      [
+        [
+          [
+            [
+              [
+                [1, 'N'],
+                ['a', 'S']
+              ],
+              'A'
+            ]
+          ],
+          'H'
+        ],
+        [
+          [
+            [
+              [
+                [2, 'N'],
+                ['b', 'S']
+              ],
+              'A'
+            ]
+          ],
+          'H'
+        ]
+      ],
+      'A'
+    ]
+
+    expect(Crimp.annotate(obj)).to eq(expected)
+  end
+end
+
+describe 'Objects' do
+  it 'raise an error if not in the list of allowed primitives' do
+    expect { Crimp.signature(Object.new) }
+      .to raise_error(TypeError, 'Expected a (String|Number|Boolean|Nil|Hash|Array), Got Object.')
   end
 end

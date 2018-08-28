@@ -3,12 +3,12 @@ lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |spec|
-  spec.name          = 'Crimp'
+  spec.name          = 'crimp'
   spec.version       = '1.0.0'
   spec.authors       = ['BBC News']
   spec.email         = ['D&ENewsFrameworksTeam@bbc.co.uk']
-  spec.summary       = 'Creates an md5 hash from simple data structures.'
-  spec.description   = ''
+  spec.summary       = 'Creates an MD5 hash from simple data structures.'
+  spec.description   = 'Platform agnostic MD5 hash from simple data structures made of numbers, strings, booleans, nil, arrays or hashes.'
   spec.homepage      = 'https://www.bbc.co.uk/news'
   spec.license       = 'MIT'
 

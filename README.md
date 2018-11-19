@@ -1,9 +1,14 @@
 # Crimp
 
-[![Build Status](https://travis-ci.org/BBC-News/crimp.png?branch=master)](https://travis-ci.org/BBC-News/crimp)
-[![Gem Version](https://badge.fury.io/rb/crimp.png)](http://badge.fury.io/rb/crimp)
+[![Build Status](https://travis-ci.org/BBC-News/crimp.svg?branch=master)](https://travis-ci.org/BBC-News/crimp)
+[![Gem Version](https://badge.fury.io/rb/crimp.svg)](http://badge.fury.io/rb/crimp)
 
 Creates an MD5 hash from simple data structures made of numbers, strings, booleans, nil, arrays or hashes.
+
+## Implementations
+
+[![Crimp Lua](https://img.shields.io/badge/Crimp-Lua-00007C.svg)](https://github.com/bbc-news/crimpua)
+[![Crimp Ruby](https://img.shields.io/badge/Crimp-Ruby-CC342D.svg)](https://github.com/bbc-news/crimp)
 
 ## Installation
 
